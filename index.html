@@ -1,37 +1,90 @@
-<!-- index.html -->
-<form id="auth-form">
-  <label>Email:</label>
-  <input id="email" type="email" required />
-  <label>Senha:</label>
-  <input id="password" type="password" required />
-  <button type="submit">Obter Token</button>
-</form>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - EDI API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f2f2f2;
+    }
 
-<div id="resultado"></div>
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
 
-<script>
-  document.getElementById("auth-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      box-sizing: border-box;
+    }
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
 
-    try {
-      const response = await fetch("https://cotacao-frete-site.onrender.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+    pre {
+      background: #eee;
+      padding: 10px;
+      margin-top: 15px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Login na API</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="senha" placeholder="Senha" />
+    <button onclick="fazerLogin()">Entrar</button>
+    <pre id="resposta"></pre>
+  </div>
+
+  <script>
+    async function fazerLogin() {
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+      const respostaEl = document.getElementById('resposta');
+
+      const body = JSON.stringify({
+        Email: email,
+        Senha: senha
       });
 
-      const data = await response.json();
+      try {
+        const response = await fetch("https://ediapi.onlineapp.com.br/toolkit/api/Autenticacao/AutenticarUsuario", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: body
+        });
 
-      if (response.ok) {
-        document.getElementById("resultado").innerHTML = `<p>Token: ${data.token}</p>`;
-      } else {
-        document.getElementById("resultado").innerHTML = `<p>Erro: ${data.detail}</p>`;
+        const data = await response.json();
+        if (response.ok) {
+          respostaEl.textContent = "Token: " + data.Token;
+        } else {
+          respostaEl.textContent = "Erro: " + (data.Mensagem || JSON.stringify(data));
+        }
+      } catch (erro) {
+        respostaEl.textContent = "Erro ao conectar: " + erro.message;
       }
-    } catch (err) {
-      document.getElementById("resultado").innerText = "Erro ao conectar ao backend.";
     }
-  });
-</script>
+  </script>
+
+</body>
+</html>
