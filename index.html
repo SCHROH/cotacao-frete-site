@@ -60,26 +60,25 @@
       const senha = document.getElementById('senha').value;
       const respostaEl = document.getElementById('resposta');
 
-      const body = JSON.stringify({
-        Email: email,
-        Senha: senha
-      });
+      const body = JSON.stringify({ Email: email, Senha: senha });
 
       try {
-        const response = await fetch("https://ediapi.onlineapp.com.br/toolkit/api/Autenticacao/AutenticarUsuario", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: body
-        });
+        const response = await fetch("https://ediapi-proxy.onrender.com/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: body
+});
 
         const data = await response.json();
+
         if (response.ok) {
           respostaEl.textContent = "Token: " + data.Token;
         } else {
           respostaEl.textContent = "Erro: " + (data.Mensagem || JSON.stringify(data));
         }
+
       } catch (erro) {
         respostaEl.textContent = "Erro ao conectar: " + erro.message;
       }
